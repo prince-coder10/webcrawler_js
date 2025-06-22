@@ -1,7 +1,22 @@
 const { JSDOM } = require("jsdom");
 
-async function crawlPage(currentURL) {
+async function crawlPage(baseURL, currentURL, pages) {
+  const baseURLObj = new URL(baseURL);
+  const currentURLObj = new URL(currentURL);
+
+  if (baseURLObj.hostname !== currentURLObj.hostname) {
+    return pages;
+  }
+
+  const normalizedCurrentUrl = normalizeURL(currentURL);
+  if (pages[normalizedCurrentUrl] > 0) {
+    pages[normalizedCurrentUrl]++;
+    return pages;
+  }
+
+  pages[normalizedCurrentUrl] = 1;
   console.log(`actively crawling ${currentURL}`);
+
   try {
     const resp = await fetch(currentURL);
     if (resp.status > 399) {
@@ -11,19 +26,24 @@ async function crawlPage(currentURL) {
         "on page",
         currentURL
       );
-      return;
+      return pages;
     }
 
     const contentType = resp.headers.get("Content-Type");
     if (!contentType.includes("text/html")) {
       console.log("non html response:", contentType, "on page", currentURL);
-      return;
+      return pages;
     }
 
-    console.log(await resp.text());
+    const htmlBody = await resp.text();
+    const nextUrls = getURLsFromHTML(htmlBody, baseURL);
+    for (const nextUrl of nextUrls) {
+      pages = await crawlPage(baseURL, nextUrl, pages);
+    }
   } catch (err) {
     console.log("error in fetch:", err.message, "on page", currentURL);
   }
+  return pages;
 }
 
 function getURLsFromHTML(htmlBody, baseURL) {
@@ -59,8 +79,8 @@ function getURLsFromHTML(htmlBody, baseURL) {
   return urls;
 }
 
-function normalizeURL(urlStrring) {
-  const url = new URL(urlStrring);
+function normalizeURL(urlString) {
+  const url = new URL(urlString);
   let normalURL = `${url.hostname}${url.pathname}`;
   if (normalURL.length > 0 && normalURL.includes("www.")) {
     normalURL = normalURL.slice(4); // Remove 'www.'
