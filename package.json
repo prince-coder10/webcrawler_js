@@ -18,6 +18,7 @@
   "homepage": "https://github.com/prince-coder10/webcrawler_js#readme",
   "description": "",
   "dependencies": {
-    "jest": "^30.0.2"
+    "jest": "^30.0.2",
+    "jsdom": "^26.1.0"
   }
 }
