@@ -1,0 +1,23 @@
+{
+  "name": "webcrawler_js",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prince-coder10/webcrawler_js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prince-coder10/webcrawler_js/issues"
+  },
+  "homepage": "https://github.com/prince-coder10/webcrawler_js#readme",
+  "description": "",
+  "dependencies": {
+    "jest": "^30.0.2"
+  }
+}
